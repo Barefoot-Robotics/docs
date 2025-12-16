@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - Barefoot Robotics</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background-color: #000000;
+            border-bottom: 1px solid #1a1a1a;
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: #999999;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #ffffff;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 4rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            padding-right: 1rem;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #333333;
+            border-radius: 2px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #666666;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+        }
+
+        .sidebar-title:hover {
+            color: #999999;
+        }
+
+        .sidebar-title .toggle {
+            font-size: 0.7rem;
+            transition: transform 0.2s;
+        }
+
+        .sidebar-title.collapsed .toggle {
+            transform: rotate(-90deg);
+        }
+
+        .sidebar-links {
+            list-style: none;
+            max-height: 500px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .sidebar-links.collapsed {
+            max-height: 0;
+        }
+
+        .sidebar-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-links a {
+            color: #999999;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .sidebar-links a:hover,
+        .sidebar-links a.active {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        /* Project selector */
+        .project-selector {
+            margin-bottom: 2rem;
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 8px;
+            padding: 0.75rem;
+        }
+
+        .project-selector select {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 0.95rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .project-selector option {
+            background: #0a0a0a;
+            color: #ffffff;
+        }
+
+        /* Content */
+        .content {
+            max-width: 900px;
+        }
+
+        .breadcrumb {
+            color: #666666;
+            font-size: 0.85rem;
+            margin-bottom: 2rem;
+        }
+
+        .breadcrumb a {
+            color: #666666;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #999999;
+        }
+
+        /* Loading state */
+        .loading {
+            text-align: center;
+            padding: 4rem 0;
+            color: #666666;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(3, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        /* Markdown Styles */
+        .content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .content h2 {
+            font-size: 1.75rem;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .content h3 {
+            font-size: 1.25rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: #cccccc;
+        }
+
+        .content h4 {
+            font-size: 1.1rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #b3b3b3;
+        }
+
+        .content p {
+            color: #b3b3b3;
+            margin-bottom: 1.25rem;
+        }
+
+        .content ul, .content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1.25rem;
+            color: #b3b3b3;
+        }
+
+        .content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .content a {
+            color: #61afef;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .content a:hover {
+            border-bottom-color: #61afef;
+        }
+
+        .content code {
+            background: #0a0a0a;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e06c75;
+        }
+
+        .content pre {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        .content pre code {
+            background: none;
+            padding: 0;
+            color: #abb2bf;
+        }
+
+        .content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+
+        .content th, .content td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .content th {
+            background: #0a0a0a;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .content td {
+            color: #b3b3b3;
+        }
+
+        .content blockquote {
+            border-left: 4px solid #2196f3;
+            background: rgba(33, 150, 243, 0.1);
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+            color: #90caf9;
+        }
+
+        .content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #000000;
+            border-top: 1px solid #1a1a1a;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-info {
+            color: #666666;
+            font-size: 0.9rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: #666666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .footer-links a:hover {
+            color: #999999;
+        }
+
+        /* Search */
+        .search-container {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: #ffffff;
+            font-size: 0.9rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #333333;
+        }
+
+        .search-input::placeholder {
+            color: #666666;
+        }
+
+        /* Error message */
+        .error-message {
+            background: rgba(244, 67, 54, 0.1);
+            border-left: 4px solid #f44336;
+            padding: 1rem 1.25rem;
+            margin: 2rem 0;
+            color: #ef5350;
+            border-radius: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .sidebar {
+                position: static;
+                max-height: none;
+            }
+
+            nav {
+                gap: 1rem;
+            }
+
+            .content h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="https://barefootrobotics.com" class="logo">Barefoot Robotics</a>
+            <nav>
+                <a href="https://barefootrobotics.com">Research</a>
+                <a href="https://barefootrobotics.com/robots">Robots</a>
+                <a href="https://barefootrobotics.com/about">About Us</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <!-- Project Selector -->
+            <div class="project-selector">
+                <select id="projectSelector">
+                    <option value="navigator">Navigator Robot</option>
+                    <option value="future-robot">Future Robot</option>
+                    <option value="general">General Guides</option>
+                </select>
+            </div>
+
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search documentation..." id="searchInput">
+            </div>
+
+            <div id="sidebarNav">
+                <!-- Navigation will be generated dynamically -->
+            </div>
+        </aside>
+
+        <main class="content">
+            <div class="breadcrumb" id="breadcrumb">
+                <a href="https://barefootrobotics.com">Home</a> / <a href="?">Documentation</a>
+            </div>
+
+            <div id="markdownContent" class="loading">
+                Loading documentation
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-info">
+                © 2025 Barefoot Robotics — All Rights Reserved
+            </div>
+            <div class="footer-links">
+                <a href="https://barefootrobotics.com/privacy">Privacy Policy</a>
+                <a href="https://barefootrobotics.com/terms">Terms of Use</a>
+                <a href="mailto:info@barefootrobotics.com">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Configuration - All documentation structure
+        const config = {
+            // GitHub raw content URL
+            baseUrl: 'https://raw.githubusercontent.com/barefootrobotics/docs/main/',
+            
+            // Documentation structure by project
+            projects: {
+                navigator: {
+                    name: 'Navigator Robot',
+                    sections: {
+                        'Getting Started': [
+                            { name: 'Overview', file: 'navigator/README.md' },
+                            { name: 'Installation', file: 'navigator/installation.md' },
+                            { name: 'Quick Start', file: 'navigator/quickstart.md' },
+                            { name: 'Package Overview', file: 'navigator/packages.md' }
+                        ],
+                        'Hardware': [
+                            { name: 'Robot Description', file: 'navigator/robot-description.md' },
+                            { name: 'Hardware Setup', file: 'navigator/hardware-setup.md' }
+                        ],
+                        'Simulation': [
+                            { name: 'Gazebo Simulation', file: 'navigator/simulation.md' },
+                            { name: 'Simulation Worlds', file: 'navigator/worlds.md' }
+                        ],
+                        'Navigation': [
+                            { name: 'SLAM Mapping', file: 'navigator/slam.md' },
+                            { name: 'Autonomous Navigation', file: 'navigator/navigation.md' },
+                            { name: 'Localization', file: 'navigator/localization.md' }
+                        ],
+                        'Control': [
+                            { name: 'Robot Control', file: 'navigator/control.md' },
+                            { name: 'Manual Control', file: 'navigator/manual-control.md' }
+                        ],
+                        'Advanced': [
+                            { name: 'Custom Messages', file: 'navigator/messages.md' },
+                            { name: 'Launch Files', file: 'navigator/launch-files.md' },
+                            { name: 'Parameter Tuning', file: 'navigator/tuning.md' }
+                        ],
+                        'Help': [
+                            { name: 'Troubleshooting', file: 'navigator/troubleshooting.md' },
+                            { name: 'FAQ', file: 'navigator/faq.md' }
+                        ]
+                    }
+                },
+                'future-robot': {
+                    name: 'Future Robot',
+                    sections: {
+                        'Getting Started': [
+                            { name: 'Overview', file: 'future-robot/README.md' },
+                            { name: 'Installation', file: 'future-robot/installation.md' }
+                        ]
+                    }
+                },
+                general: {
+                    name: 'General Guides',
+                    sections: {
+                        'Guides': [
+                            { name: 'ROS 2 Basics', file: 'general/ros2-basics.md' },
+                            { name: 'Contributing', file: 'general/contributing.md' }
+                        ]
+                    }
+                }
+            }
+        };
+
+        let currentProject = 'navigator';
+        let currentPage = null;
+
+        // Initialize
+        function init() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const project = urlParams.get('project') || 'navigator';
+            const page = urlParams.get('page');
+            
+            currentProject = project;
+            document.getElementById('projectSelector').value = project;
+            
+            generateSidebar(project);
+            
+            if (page) {
+                loadPage(page);
+            } else {
+                // Load first page of selected project
+                const firstPage = getFirstPage(project);
+                loadPage(firstPage);
+            }
+        }
+
+        // Get first page of a project
+        function getFirstPage(project) {
+            const sections = config.projects[project].sections;
+            const firstSection = Object.values(sections)[0];
+            return firstSection[0].file;
+        }
+
+        // Generate sidebar navigation
+        function generateSidebar(project) {
+            const sidebarNav = document.getElementById('sidebarNav');
+            const sections = config.projects[project].sections;
+            
+            let html = '';
+            
+            Object.keys(sections).forEach(sectionName => {
+                const pages = sections[sectionName];
+                
+                html += `
+                    <div class="sidebar-section">
+                        <div class="sidebar-title" onclick="toggleSection(this)">
+                            ${sectionName}
+                            <span class="toggle">▼</span>
+                        </div>
+                        <ul class="sidebar-links">
+                `;
+                
+                pages.forEach(page => {
+                    html += `
+                        <li>
+                            <a href="?project=${project}&page=${encodeURIComponent(page.file)}" 
+                               onclick="loadPage('${page.file}'); return false;">
+                                ${page.name}
+                            </a>
+                        </li>
+                    `;
+                });
+                
+                html += `
+                        </ul>
+                    </div>
+                `;
+            });
+            
+            sidebarNav.innerHTML = html;
+            
+            // Highlight active page
+            highlightActivePage();
+        }
+
+        // Toggle sidebar section
+        function toggleSection(element) {
+            element.classList.toggle('collapsed');
+            const links = element.nextElementSibling;
+            links.classList.toggle('collapsed');
+        }
+
+        // Load and render markdown page
+        async function loadPage(pageFile) {
+            const contentDiv = document.getElementById('markdownContent');
+            currentPage = pageFile;
+            
+            try {
+                contentDiv.innerHTML = '<div class="loading">Loading documentation</div>';
+                
+                const response = await fetch(config.baseUrl + pageFile);
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to load ${pageFile}`);
+                }
+                
+                const markdown = await response.text();
+                const html = marked.parse(markdown);
+                
+                contentDiv.innerHTML = html;
+                
+                // Update breadcrumb
+                updateBreadcrumb(pageFile);
+                
+                // Process links
+                processLinks();
+                
+                // Highlight active page in sidebar
+                highlightActivePage();
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+                
+                // Update URL without reload
+                const url = new URL(window.location);
+                url.searchParams.set('project', currentProject);
+                url.searchParams.set('page', pageFile);
+                window.history.pushState({}, '', url);
+                
+            } catch (error) {
+                contentDiv.innerHTML = `
+                    <div class="error-message">
+                        <strong>Error loading documentation:</strong> ${error.message}
+                        <br><br>
+                        Make sure the markdown file exists at:
+                        <br>
+                        <code>${config.baseUrl + pageFile}</code>
+                    </div>
+                `;
+            }
+        }
+
+        // Update breadcrumb
+        function updateBreadcrumb(pageFile) {
+            const breadcrumb = document.getElementById('breadcrumb');
+            const projectName = config.projects[currentProject].name;
+            const pageName = getPageName(pageFile);
+            
+            breadcrumb.innerHTML = `
+                <a href="https://barefootrobotics.com">Home</a> / 
+                <a href="?project=${currentProject}">Documentation</a> / 
+                <a href="?project=${currentProject}">${projectName}</a> / 
+                <span>${pageName}</span>
+            `;
+        }
+
+        // Get page name from file path
+        function getPageName(pageFile) {
+            const sections = config.projects[currentProject].sections;
+            for (let section in sections) {
+                const page = sections[section].find(p => p.file === pageFile);
+                if (page) return page.name;
+            }
+            return 'Documentation';
+        }
+
+        // Highlight active page in sidebar
+        function highlightActivePage() {
+            document.querySelectorAll('.sidebar-links a').forEach(link => {
+                link.classList.remove('active');
+                const href = link.getAttribute('href');
+                if (href && href.includes(currentPage)) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Process internal documentation links
+        function processLinks() {
+            const contentDiv = document.getElementById('markdownContent');
+            const links = contentDiv.querySelectorAll('a[href$=".md"]');
+            
+            links.forEach(link => {
+                const href = link.getAttribute('href');
+                const fullPath = currentPage.replace(/[^/]*$/, '') + href;
+                
+                link.setAttribute('href', `?project=${currentProject}&page=${fullPath}`);
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    loadPage(fullPath);
+                };
+            });
+        }
+
+        // Project selector change
+        document.getElementById('projectSelector').addEventListener('change', (e) => {
+            currentProject = e.target.value;
+            generateSidebar(currentProject);
+            const firstPage = getFirstPage(currentProject);
+            loadPage(firstPage);
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('.sidebar-links a').forEach(link => {
+                const text = link.textContent.toLowerCase();
+                link.parentElement.style.display = text.includes(searchTerm) ? 'block' : 'none';
+            });
+        });
+
+        // Handle browser back/forward
+        window.addEventListener('popstate', () => {
+            init();
+        });
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
