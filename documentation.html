@@ -217,11 +217,25 @@
             60%, 100% { content: '...'; }
         }
 
+        /* Reset text alignment for content */
+        .content * {
+            text-align: left;
+        }
+
+        .content .loading {
+            text-align: center;
+        }
+
+        .content .error-message {
+            text-align: left;
+        }
+
         /* Markdown Styles */
         .content h1 {
             font-size: 2.5rem;
             margin-bottom: 1.5rem;
             font-weight: 700;
+            text-align: left;
         }
 
         .content h2 {
@@ -231,6 +245,7 @@
             font-weight: 600;
             padding-bottom: 0.5rem;
             border-bottom: 1px solid #1a1a1a;
+            text-align: left;
         }
 
         .content h3 {
@@ -239,6 +254,7 @@
             margin-bottom: 0.75rem;
             font-weight: 600;
             color: #cccccc;
+            text-align: left;
         }
 
         .content h4 {
@@ -247,21 +263,25 @@
             margin-bottom: 0.5rem;
             font-weight: 600;
             color: #b3b3b3;
+            text-align: left;
         }
 
         .content p {
             color: #b3b3b3;
             margin-bottom: 1.25rem;
+            text-align: left;
         }
 
         .content ul, .content ol {
             margin-left: 1.5rem;
             margin-bottom: 1.25rem;
             color: #b3b3b3;
+            text-align: left;
         }
 
         .content li {
             margin-bottom: 0.5rem;
+            text-align: left;
         }
 
         .content a {
@@ -303,6 +323,7 @@
             width: 100%;
             border-collapse: collapse;
             margin: 2rem 0;
+            text-align: left;
         }
 
         .content th, .content td {
@@ -315,10 +336,12 @@
             background: #0a0a0a;
             font-weight: 600;
             color: #ffffff;
+            text-align: left;
         }
 
         .content td {
             color: #b3b3b3;
+            text-align: left;
         }
 
         .content blockquote {
@@ -327,6 +350,11 @@
             padding: 1rem 1.25rem;
             margin: 1.5rem 0;
             color: #90caf9;
+            text-align: left;
+        }
+
+        .content blockquote p {
+            margin-bottom: 0;
         }
 
         .content img {
@@ -334,6 +362,23 @@
             height: auto;
             border-radius: 8px;
             margin: 1.5rem 0;
+            display: block;
+        }
+
+        .content strong {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .content em {
+            color: #cccccc;
+            font-style: italic;
+        }
+
+        .content hr {
+            border: none;
+            border-top: 1px solid #1a1a1a;
+            margin: 3rem 0;
         }
 
         /* Footer */
@@ -487,9 +532,15 @@
 
     <script>
         // Configuration - All documentation structure
+        
+        // Auto-detect environment: local development vs production
+        const DEVELOPMENT_MODE = window.location.hostname === 'localhost' || 
+                                 window.location.hostname === '127.0.0.1' ||
+                                 window.location.protocol === 'file:';
+        
         const config = {
-            // GitHub raw content URL
-            baseUrl: 'https://raw.githubusercontent.com/barefootrobotics/docs/main/',
+            // Automatically use local paths in development, GitHub raw in production
+            baseUrl: DEVELOPMENT_MODE ? './' : 'https://raw.githubusercontent.com/barefootrobotics/docs/main/',
             
             // Documentation structure by project
             projects: {
