@@ -17,6 +17,189 @@
             background-color: #000000;
             color: #ffffff;
             line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Light Mode Styles */
+        body.light-mode {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        body.light-mode header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        body.light-mode .logo {
+            color: #000000;
+        }
+
+        body.light-mode nav a {
+            color: #666666;
+        }
+
+        body.light-mode nav a:hover {
+            color: #000000;
+        }
+
+        body.light-mode .sidebar {
+            background-color: #ffffff;
+        }
+
+        body.light-mode .sidebar::-webkit-scrollbar-track {
+            background: #f5f5f5;
+        }
+
+        body.light-mode .sidebar::-webkit-scrollbar-thumb {
+            background: #cccccc;
+        }
+
+        body.light-mode .sidebar-title {
+            color: #999999;
+        }
+
+        body.light-mode .sidebar-links a {
+            color: #666666;
+        }
+
+        body.light-mode .sidebar-links a:hover,
+        body.light-mode .sidebar-links a.active {
+            background-color: #f5f5f5;
+            color: #000000;
+        }
+
+        body.light-mode .project-selector {
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+        }
+
+        body.light-mode .project-selector select {
+            color: #000000;
+        }
+
+        body.light-mode .project-selector option {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        body.light-mode .search-input {
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            color: #000000;
+        }
+
+        body.light-mode .search-input::placeholder {
+            color: #999999;
+        }
+
+        body.light-mode .breadcrumb {
+            color: #999999;
+        }
+
+        body.light-mode .breadcrumb a {
+            color: #999999;
+        }
+
+        body.light-mode .breadcrumb a:hover {
+            color: #666666;
+        }
+
+        body.light-mode .content h1,
+        body.light-mode .content h2 {
+            color: #000000;
+        }
+
+        body.light-mode .content h2 {
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        body.light-mode .content h3 {
+            color: #333333;
+        }
+
+        body.light-mode .content h4 {
+            color: #4d4d4d;
+        }
+
+        body.light-mode .content p,
+        body.light-mode .content ul,
+        body.light-mode .content ol,
+        body.light-mode .content li {
+            color: #4d4d4d;
+        }
+
+        body.light-mode .content code {
+            background: #f5f5f5;
+            color: #d63031;
+        }
+
+        body.light-mode .content pre {
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+        }
+
+        body.light-mode .content pre code {
+            color: #2d3436;
+        }
+
+        body.light-mode .content th {
+            background: #f5f5f5;
+            color: #000000;
+        }
+
+        body.light-mode .content td,
+        body.light-mode .content th {
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        body.light-mode .content td {
+            color: #4d4d4d;
+        }
+
+        body.light-mode .content blockquote {
+            background: rgba(33, 150, 243, 0.1);
+            color: #1976d2;
+        }
+
+        body.light-mode .content strong {
+            color: #000000;
+        }
+
+        body.light-mode .content em {
+            color: #333333;
+        }
+
+        body.light-mode .content hr {
+            border-top: 1px solid #e0e0e0;
+        }
+
+        body.light-mode .content a {
+            color: #2196f3;
+        }
+
+        body.light-mode .loading {
+            color: #999999;
+        }
+
+        body.light-mode .error-message {
+            background: rgba(244, 67, 54, 0.1);
+            border-left: 4px solid #f44336;
+            color: #c62828;
+        }
+
+        body.light-mode footer {
+            background-color: #ffffff;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        body.light-mode .footer-info,
+        body.light-mode .footer-links a {
+            color: #999999;
+        }
+
+        body.light-mode .footer-links a:hover {
+            color: #666666;
         }
 
         /* Header */
@@ -60,6 +243,40 @@
             color: #ffffff;
         }
 
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background: transparent;
+            border: 1px solid #333333;
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-toggle:hover {
+            background: #1a1a1a;
+            border-color: #444444;
+        }
+
+        body.light-mode .theme-toggle {
+            border: 1px solid #cccccc;
+            color: #000000;
+        }
+
+        body.light-mode .theme-toggle:hover {
+            background: #f5f5f5;
+            border-color: #999999;
+        }
+
+        .theme-icon {
+            font-size: 1.1rem;
+        }
+
         /* Main Container */
         .container {
             max-width: 1400px;
@@ -101,7 +318,7 @@
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            color: #ffffff;
+            color: #666666;
             margin-bottom: 0.75rem;
             font-weight: 600;
             cursor: pointer;
@@ -185,13 +402,13 @@
         }
 
         .breadcrumb {
-            color: #ffffff;
+            color: #666666;
             font-size: 0.85rem;
             margin-bottom: 2rem;
         }
 
         .breadcrumb a {
-            color: #ffffff;
+            color: #666666;
             text-decoration: none;
         }
 
@@ -203,7 +420,7 @@
         .loading {
             text-align: center;
             padding: 4rem 0;
-            color: #ffffff;
+            color: #666666;
         }
 
         .loading::after {
@@ -311,12 +528,67 @@
             padding: 1.5rem;
             overflow-x: auto;
             margin: 1.5rem 0;
+            position: relative;
         }
 
         .content pre code {
             background: none;
             padding: 0;
             color: #abb2bf;
+        }
+
+        /* Copy Button */
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            color: #ffffff;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            opacity: 0;
+        }
+
+        .content pre:hover .copy-button {
+            opacity: 1;
+        }
+
+        .copy-button:hover {
+            background: #2a2a2a;
+            border-color: #444444;
+        }
+
+        .copy-button:active {
+            transform: scale(0.95);
+        }
+
+        .copy-button.copied {
+            background: #4caf50;
+            border-color: #4caf50;
+        }
+
+        body.light-mode .copy-button {
+            background: #f5f5f5;
+            border: 1px solid #cccccc;
+            color: #000000;
+        }
+
+        body.light-mode .copy-button:hover {
+            background: #e0e0e0;
+            border-color: #999999;
+        }
+
+        body.light-mode .copy-button.copied {
+            background: #4caf50;
+            border-color: #4caf50;
+            color: #ffffff;
         }
 
         .content table {
@@ -479,9 +751,13 @@
         <div class="header-content">
             <a href="https://barefootrobotics.com" class="logo">Barefoot Robotics</a>
             <nav>
-                <a href="https://barefootrobotics.com/research">Research</a>
+                <a href="https://barefootrobotics.com">Research</a>
                 <a href="https://barefootrobotics.com/robots">Robots</a>
                 <a href="https://barefootrobotics.com/about">About Us</a>
+                <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                    <span class="theme-icon" id="themeIcon">☀️</span>
+                    <span id="themeText">Light</span>
+                </button>
             </nav>
         </div>
     </header>
@@ -492,6 +768,8 @@
             <div class="project-selector">
                 <select id="projectSelector">
                     <option value="navigator">Navigator Robot</option>
+                    <option value="future-robot">Future Robot</option>
+                    <option value="general">General Guides</option>
                 </select>
             </div>
 
@@ -704,6 +982,9 @@
                 // Process links
                 processLinks();
                 
+                // Add copy buttons to code blocks
+                addCopyButtons();
+                
                 // Highlight active page in sidebar
                 highlightActivePage();
                 
@@ -805,6 +1086,108 @@
 
         // Initialize on load
         init();
+
+        // Theme Toggle Functionality
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            body.classList.toggle('light-mode');
+            
+            if (body.classList.contains('light-mode')) {
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark';
+                localStorage.setItem('theme', 'light');
+            } else {
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Load saved theme preference
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            if (savedTheme === 'light') {
+                body.classList.add('light-mode');
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark';
+            }
+        }
+
+        // Load theme on page load
+        loadTheme();
+
+        // Add copy buttons to code blocks
+        function addCopyButtons() {
+            const codeBlocks = document.querySelectorAll('.content pre');
+            
+            codeBlocks.forEach((block) => {
+                // Skip if button already exists
+                if (block.querySelector('.copy-button')) return;
+                
+                const button = document.createElement('button');
+                button.className = 'copy-button';
+                button.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy</span>
+                `;
+                
+                button.addEventListener('click', async () => {
+                    const code = block.querySelector('code');
+                    const text = code.textContent;
+                    
+                    try {
+                        await navigator.clipboard.writeText(text);
+                        
+                        // Show success state
+                        button.innerHTML = `
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>Copied!</span>
+                        `;
+                        button.classList.add('copied');
+                        
+                        // Reset after 2 seconds
+                        setTimeout(() => {
+                            button.innerHTML = `
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                                <span>Copy</span>
+                            `;
+                            button.classList.remove('copied');
+                        }, 2000);
+                    } catch (err) {
+                        console.error('Failed to copy:', err);
+                        button.innerHTML = `
+                            <span>Failed</span>
+                        `;
+                        setTimeout(() => {
+                            button.innerHTML = `
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                                <span>Copy</span>
+                            `;
+                        }, 2000);
+                    }
+                });
+                
+                block.appendChild(button);
+            });
+        }
     </script>
 </body>
 </html>
