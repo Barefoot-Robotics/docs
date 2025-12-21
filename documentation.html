@@ -230,6 +230,7 @@
         nav {
             display: flex;
             gap: 2rem;
+            align-items: center;
         }
 
         nav a {
@@ -408,19 +409,19 @@
         }
 
         .breadcrumb a {
-            color: #666666;
+            color: #ffffff;
             text-decoration: none;
         }
 
         .breadcrumb a:hover {
-            color: #999999;
+            color: #ffffff;
         }
 
         /* Loading state */
         .loading {
             text-align: center;
             padding: 4rem 0;
-            color: #666666;
+            color: #ffffff;
         }
 
         .loading::after {
@@ -755,7 +756,7 @@
                 <a href="https://barefootrobotics.com/robots">Robots</a>
                 <a href="https://barefootrobotics.com/about">About Us</a>
                 <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
-                    <span class="theme-icon" id="themeIcon">☀️</span>
+                    <!-- <span class="theme-icon" id="themeIcon">☀️</span> -->
                     <span id="themeText">Light</span>
                 </button>
             </nav>
@@ -768,8 +769,6 @@
             <div class="project-selector">
                 <select id="projectSelector">
                     <option value="navigator">Navigator Robot</option>
-                    <option value="future-robot">Future Robot</option>
-                    <option value="general">General Guides</option>
                 </select>
             </div>
 
@@ -1096,11 +1095,11 @@
             body.classList.toggle('light-mode');
             
             if (body.classList.contains('light-mode')) {
-                themeIcon.textContent = '🌙';
+                // themeIcon.textContent = '+';
                 themeText.textContent = 'Dark';
                 localStorage.setItem('theme', 'light');
             } else {
-                themeIcon.textContent = '☀️';
+                // themeIcon.textContent = '-';
                 themeText.textContent = 'Light';
                 localStorage.setItem('theme', 'dark');
             }
@@ -1115,7 +1114,7 @@
             
             if (savedTheme === 'light') {
                 body.classList.add('light-mode');
-                themeIcon.textContent = '🌙';
+                // themeIcon.textContent = '🌙';
                 themeText.textContent = 'Dark';
             }
         }

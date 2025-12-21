@@ -7,7 +7,7 @@ Get your Navigator robot running in simulation in just a few minutes!
 - Completed [Installation Guide](installation.md)
 - ROS 2 workspace built and sourced
 
-## 🚀 Launch Your First Simulation
+##  Launch Your First Simulation
 
 ### Option 1: Simple Gazebo Simulation
 
@@ -35,7 +35,7 @@ ros2 launch navigator_sim gazebo.launch.py
 ros2 launch navigator_sim rviz_nav2.launch.py
 ```
 
-## 🎮 Control the Robot
+##  Control the Robot
 
 ### Using Keyboard Teleop
 
@@ -63,7 +63,7 @@ sudo apt install ros-humble-joy
 ros2 launch teleop_twist_joy teleop-launch.py
 ```
 
-## 🗺️ Create Your First Map (SLAM)
+##  Create Your First Map (SLAM)
 
 ### Start SLAM Mapping
 
@@ -101,7 +101,7 @@ You'll get two files:
 - `my_first_map.yaml` - Map metadata
 - `my_first_map.pgm` - Map image
 
-## 🧭 Navigate Autonomously
+##  Navigate Autonomously
 
 ### Using a Saved Map
 
@@ -119,7 +119,7 @@ In RViz:
 4. Click on the map where you want the robot to go
 5. Watch the robot navigate autonomously!
 
-## 📊 Monitor Robot Status
+##  Monitor Robot Status
 
 Check various topics:
 
@@ -140,7 +140,7 @@ ros2 topic echo /joint_states
 ros2 run rqt_tf_tree rqt_tf_tree
 ```
 
-## 🎯 Quick Command Reference
+##  Quick Command Reference
 
 ### Launch Commands
 
@@ -177,7 +177,7 @@ ros2 launch navigator_control view_robot.launch.py
 killall -9 gzserver gzclient ruby rviz2
 ```
 
-## ⚠️ Common First-Time Issues
+##  Common First-Time Issues
 
 ### Robot Not Moving
 
@@ -214,7 +214,7 @@ rm -rf ~/.ignition
 ign gazebo -v 4
 ```
 
-## 🎓 What's Next?
+##  What's Next?
 
 Now that you have the basics working:
 
