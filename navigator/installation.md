@@ -66,7 +66,7 @@ mkdir -p ~/navigator_ws/src
 cd ~/navigator_ws/src
 
 # Clone the Navigator repository
-git clone https://github.com/yourusername/navigator.git
+git clone https://github.com/Barefoot-Robotics/navigator.git
 
 # Return to workspace root
 cd ~/navigator_ws

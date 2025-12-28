@@ -202,22 +202,6 @@ ros2 param get /slam_toolbox resolution
 
 ## Map Quality Assessment
 
-### Good Map Indicators
-
-✅ **Sharp edges**: Walls are straight lines
-✅ **Closed loops**: Rooms properly connected
-✅ **No drift**: Returning to start matches original position
-✅ **Consistent thickness**: Walls have uniform width
-✅ **Clear obstacles**: Objects are distinct
-
-### Poor Map Indicators
-
-❌ **Blurry edges**: Multiple overlapping walls
-❌ **Disconnected rooms**: Gaps in walls
-❌ **Drift**: Start and end positions don't match
-❌ **Varying thickness**: Walls expand/contract
-❌ **Ghost objects**: Artifacts from motion
-
 ### Fixing Poor Maps
 
 **Problem**: Blurry walls
