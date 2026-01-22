@@ -2,7 +2,7 @@
 
 Welcome to the Navigator Robot documentation. This guide will help you get started with building, simulating, and deploying your Navigator robot.
 
-## 📚 Documentation Sections
+## Documentation Sections
 
 ### Getting Started
 - [Installation Guide](docs/installation.md) - Set up your development environment
@@ -45,7 +45,7 @@ Welcome to the Navigator Robot documentation. This guide will help you get start
 
 **Navigation Users**: See [SLAM Mapping](docs/slam.md) and [Autonomous Navigation](docs/navigation.md)
 
-## 📦 Repository Structure
+## Repository Structure
 
 ```
 navigator/
@@ -58,11 +58,11 @@ navigator/
 └── docs/                   # Documentation files
 ```
 
-## 🤝 Contributing
+## Contributing
 
 Found an issue or want to improve the documentation? Contributions are welcome! Please submit a pull request or open an issue.
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License.
 
