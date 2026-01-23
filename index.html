@@ -7,26 +7,37 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="./css/main.css">
     <link rel="stylesheet" href="./css/theme.css">
-    <link  rel="stylesheet" href="./css/components.css">
+    <link rel="stylesheet" href="./css/components.css">
 </head>
 <body>
     <header>
         <div class="header-content">
-            <a class="logo"href="https://barefootrobotics.com" class="logo">Barefoot Robotics</a>
-            <nav>
+            <a class="logo" href="https://barefootrobotics.com">Barefoot Robotics</a>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav id="mainNav">
                 <a href="https://barefootrobotics.com">Research</a>
                 <a href="https://barefootrobotics.com/robots">Robots</a>
                 <a href="https://barefootrobotics.com/about">About Us</a>
                 <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
-                    <!-- <span class="theme-icon" id="themeIcon">☀️</span> -->
                     <span id="themeText">Light</span>
                 </button>
             </nav>
         </div>
     </header>
 
+    <!-- Mobile Sidebar Toggle -->
+    <button class="mobile-sidebar-toggle" id="mobileSidebarToggle" onclick="toggleMobileSidebar()">
+        <span>☰</span> Menu
+    </button>
+
     <div class="container">
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-close" onclick="toggleMobileSidebar()">✕</div>
+            
             <!-- Project Selector -->
             <div class="project-selector">
                 <select id="projectSelector">
@@ -76,8 +87,8 @@
                                  window.location.protocol === 'file:';
         
         const config = {
-            // Automatically use local paths in development, GitHub raw in production
-            baseUrl: DEVELOPMENT_MODE ? '' : 'https://raw.githubusercontent.com/Barefoot-Robotics/docs/master/',
+            // Automatically use local paths in development, GitHub Pages in production
+            baseUrl: DEVELOPMENT_MODE ? '' : 'https://barefootrobotics.github.io/docs/',
             
             // Documentation structure by project
             projects: {
@@ -103,7 +114,6 @@
                         ],
                         'Control': [
                             { name: 'Robot Control', file: 'navigator/control.md' },
-                            // { name: 'Manual Control', file: 'navigator/manual-control.md' }
                         ],
                         'Advanced': [
                             { name: 'Custom Messages', file: 'navigator/messages.md' },
@@ -113,24 +123,6 @@
                         'Help': [
                             { name: 'Troubleshooting', file: 'navigator/troubleshooting.md' },
                             { name: 'FAQ', file: 'navigator/faq.md' }
-                        ]
-                    }
-                },
-                'future-robot': {
-                    name: 'Future Robot',
-                    sections: {
-                        'Getting Started': [
-                            { name: 'Overview', file: 'future-robot/README.md' },
-                            { name: 'Installation', file: 'future-robot/installation.md' }
-                        ]
-                    }
-                },
-                general: {
-                    name: 'General Guides',
-                    sections: {
-                        'Guides': [
-                            { name: 'ROS 2 Basics', file: 'general/ros2-basics.md' },
-                            { name: 'Contributing', file: 'general/contributing.md' }
                         ]
                     }
                 }
@@ -346,20 +338,53 @@
         // Initialize on load
         init();
 
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const nav = document.getElementById('mainNav');
+            const toggle = document.getElementById('mobileMenuToggle');
+            nav.classList.toggle('active');
+            toggle.classList.toggle('active');
+        }
+
+        // Mobile sidebar toggle
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const body = document.body;
+            sidebar.classList.toggle('mobile-active');
+            body.classList.toggle('sidebar-open');
+        }
+
+        // Close mobile sidebar when clicking on a link
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.sidebar-links a')) {
+                const sidebar = document.getElementById('sidebar');
+                const body = document.body;
+                sidebar.classList.remove('mobile-active');
+                body.classList.remove('sidebar-open');
+            }
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            const nav = document.getElementById('mainNav');
+            const toggle = document.getElementById('mobileMenuToggle');
+            if (!e.target.closest('header') && nav.classList.contains('active')) {
+                nav.classList.remove('active');
+                toggle.classList.remove('active');
+            }
+        });
+
         // Theme Toggle Functionality
         function toggleTheme() {
             const body = document.body;
-            const themeIcon = document.getElementById('themeIcon');
             const themeText = document.getElementById('themeText');
             
             body.classList.toggle('light-mode');
             
             if (body.classList.contains('light-mode')) {
-                // themeIcon.textContent = '+';
                 themeText.textContent = 'Dark';
                 localStorage.setItem('theme', 'light');
             } else {
-                // themeIcon.textContent = '-';
                 themeText.textContent = 'Light';
                 localStorage.setItem('theme', 'dark');
             }
@@ -369,12 +394,10 @@
         function loadTheme() {
             const savedTheme = localStorage.getItem('theme');
             const body = document.body;
-            const themeIcon = document.getElementById('themeIcon');
             const themeText = document.getElementById('themeText');
             
             if (savedTheme === 'light') {
                 body.classList.add('light-mode');
-                // themeIcon.textContent = '🌙';
                 themeText.textContent = 'Dark';
             }
         }
