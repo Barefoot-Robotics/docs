@@ -12,6 +12,7 @@ Welcome to the Navigator Robot documentation. This guide will help you get start
 ### Hardware & Description
 - [Robot Description](docs/robot-description.md) - URDF models and robot specifications
 - [Hardware Setup](docs/hardware-setup.md) - Physical robot assembly and configuration
+- [Camera Integration](docs/camera.md) - UC-261 (OV5647)
 
 ### Simulation
 - [Gazebo Simulation](docs/simulation.md) - Running Navigator in Gazebo

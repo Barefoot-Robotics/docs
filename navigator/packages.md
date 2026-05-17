@@ -1,324 +1,193 @@
 # Package Overview
 
-The Navigator robot software is organized into six main packages, each with a specific purpose.
+The Navigator robot software is organized into six main packages.
 
 ## Package Structure
 
 ```
 navigator/
-├── navigator_bringup/      # Launch files for bringing up the robot
-├── navigator_control/      # ros2_control configuration
+├── navigator_bringup/      # Hardware interface, launch files, motor driver
+├── navigator_control/      # ros2_control configuration (simulation only)
 ├── navigator_description/  # URDF, meshes, robot model
-├── navigator_msgs/         # Custom ROS messages
-├── navigator_nav/          # Navigation and SLAM configuration
-└── navigator_sim/          # Gazebo simulation
+├── navigator_msgs/         # Custom ROS 2 messages
+├── navigator_nav/          # Nav2 and SLAM configuration
+└── navigator_sim/          # Gazebo Fortress simulation
 ```
 
 ---
 
-## 📦 navigator_bringup
+## navigator_bringup
 
-**Purpose**: High-level launch files for starting the complete robot system
-
-### Contents
+**Purpose**: Real robot hardware interface and bringup launch files.
 
 ```
 navigator_bringup/
+├── config/
+│   └── nav2_params.yaml            # Nav2 parameters for real robot
 ├── launch/
-│   └── bringup_rviz.launch.py    # Launch control + RViz
-├── config/                        # Configuration files
+│   ├── hardware.launch.py          # Full hardware bringup ← START HERE
+│   ├── bringup_rviz.launch.py      # Hardware + navigation + RViz
+│   ├── navigation.launch.py        # SLAM or map-based navigation
+│   ├── hardware.launch.py          # Motors + lidar + camera
+│   ├── slam.launch.py              # SLAM mapping only
+│   └── calibrate_camera.launch.py  # Camera calibration (optional)
+├── scripts/
+│   ├── ros2_hardware_interface.py  # ROS 2 node: motors + odometry + TF
+│   ├── motion.py                   # Motor control with S-curve smoothing
+│   └── ddsm.py                     # DDSM motor driver (serial protocol)
 ├── CMakeLists.txt
 └── package.xml
 ```
 
-### Key Features
+### Hardware nodes started by hardware.launch.py
 
-- Combines multiple subsystems (control, sensors, navigation)
-- Provides convenient entry points for common scenarios
-- Manages startup sequences with delays
+| Node | Package | Purpose |
+|------|---------|---------|
+| `navigator_hardware` | navigator_bringup | Motors, odometry, TF broadcaster |
+| `robot_state_publisher` | robot_state_publisher | URDF → TF |
+| `lidar_static_tf` | tf2_ros | 180° lidar mount correction |
+| `rplidar_node` | rplidar_ros | RPLidar driver → `/scan` |
+| `camera_node` | camera_ros | OV5647 → `/camera/image_raw` |
+| `camera_optical_tf` | tf2_ros | camera_link → camera_optical_frame |
 
-### When to Use
-
-- Starting the complete robot system
-- Production deployments
-- Integrated testing
-
-### Example Usage
+### Launch commands
 
 ```bash
-ros2 launch navigator_bringup bringup_rviz.launch.py
+# Full hardware bringup (use this on the real robot)
+ros2 launch navigator_bringup hardware.launch.py
+
+# With SLAM
+ros2 launch navigator_bringup navigation.launch.py slam:=true
+
+# With saved map
+ros2 launch navigator_bringup navigation.launch.py \
+    map:=~/navigator_maps/my_map.yaml
+
+# Camera calibration (optional)
+ros2 launch navigator_bringup calibrate_camera.launch.py
 ```
+
+### Motor driver details
+
+The DDSM motors communicate via serial JSON protocol:
+- **Left motor**: ID 2 (QinHeng CH343, `/dev/ttyACM0`)
+- **Right motor**: ID 1
+- **Wheel radius**: 0.036m
+- **Wheel base**: 0.195m
+- **Smoothing**: Exponential low-pass filter (alpha=0.3 linear, 0.5 angular)
 
 ---
 
-## 🎮 navigator_control
+## navigator_control
 
-**Purpose**: ros2_control configuration for differential drive control
-
-### Contents
+**Purpose**: ros2_control configuration — used in **simulation only**.
 
 ```
 navigator_control/
 ├── config/
-│   ├── ros2_control.yaml          # Controller configuration
-│   ├── diff_controllers.yaml      # Differential drive settings
-│   └── navigator.rviz             # RViz configuration
-├── launch/
-│   ├── ros2_control.launch.py     # Start controllers
-│   └── view_robot.launch.py       # View robot in RViz
-├── CMakeLists.txt
-└── package.xml
+│   ├── ros2_control.yaml     # Controller parameters
+│   ├── diff_controllers.yaml # Differential drive settings
+│   └── navigator.rviz        # RViz config
+└── launch/
+    ├── ros2_control.launch.py  # Start controllers
+    └── view_robot.launch.py    # View robot in RViz
 ```
 
-### Key Features
-
-- **Differential Drive Controller**: Controls two-wheeled robot motion
-- **Joint State Broadcaster**: Publishes wheel positions/velocities
-- **Mock Hardware Support**: Test without physical robot
-- **Odometry Publishing**: Provides pose estimation
-
-### Configuration Parameters
-
-From `ros2_control.yaml`:
-- `wheel_radius`: 0.033 m
-- `wheel_separation`: 0.145 m
-- `update_rate`: 50 Hz
-- `cmd_vel_timeout`: 0.5 s
-
-### Example Usage
-
-```bash
-# Start control system
-ros2 launch navigator_control ros2_control.launch.py
-
-# View in RViz
-ros2 launch navigator_control view_robot.launch.py
-```
+**Note**: On the real robot, motor control is handled by `navigator_bringup/scripts/ros2_hardware_interface.py` directly. `navigator_control` is only used with Gazebo simulation.
 
 ---
 
-## 🤖 navigator_description
+## navigator_description
 
-**Purpose**: Robot model definition (URDF), meshes, and visual assets
-
-### Contents
+**Purpose**: Robot model definition (URDF/Xacro) and mesh files.
 
 ```
 navigator_description/
 ├── urdf/
-│   ├── navigator.urdf.xacro           # Main robot definition
-│   ├── navigator_gazebo.urdf.xacro    # Gazebo-specific model
-│   ├── ros2_control.xacro             # Control interfaces
+│   ├── navigator.urdf.xacro           # Main robot (ros2_control)
+│   ├── navigator_gazebo.urdf.xacro    # Gazebo simulation model
+│   ├── ros2_control.xacro             # Hardware interfaces
 │   ├── gazebo.xacro                   # Gazebo plugins
-│   ├── bases/
-│   │   └── chassis.xacro              # Chassis definition
-│   ├── wheels/
-│   │   └── wheel.xacro                # Wheel macros
+│   ├── bases/chassis.xacro            # Chassis
+│   ├── wheels/wheel.xacro             # Wheel macros
 │   └── sensors/
-│       ├── lidar.xacro                # Lidar sensor
-│       └── camera.xacro               # Camera sensor
-├── meshes/                            # 3D mesh files (.STL)
-│   ├── base_link.STL
-│   ├── left_wheel_link.STL
-│   ├── right_wheel_link.STL
-│   └── lidar_link.STL
-├── launch/                            # Launch files
-├── config/                            # Configuration files
-├── CMakeLists.txt
-└── package.xml
+│       ├── lidar.xacro                # RPLidar
+│       └── camera.xacro               # OV5647 camera mount
+└── meshes/                            # STL mesh files
 ```
 
-### Key Features
+### Robot specifications
 
-- **Modular URDF**: Separate files for chassis, wheels, sensors
-- **Two Model Variants**:
-  - `navigator.urdf.xacro`: For ros2_control
-  - `navigator_gazebo.urdf.xacro`: For Gazebo simulation
-- **Parametric Design**: Easy to adjust dimensions
-- **STL Meshes**: Accurate visual representation
-
-### Robot Specifications
-
-- **Dimensions**: 180mm × 120mm × 60mm
-- **Wheel Radius**: 36mm
-- **Wheel Separation**: 195mm
-- **Mass**: ~5kg base + 2kg per wheel
-- **Sensors**:
-  - 360° Lidar (10m range)
-  - RGB Camera (640×480)
-
-### Example Usage
-
-```bash
-# View robot model
-ros2 launch navigator_description view_robot.launch.py
-
-# Check URDF syntax
-check_urdf navigator.urdf.xacro
-```
+| Property | Value |
+|----------|-------|
+| Dimensions | 180mm × 120mm × 60mm |
+| Wheel radius | 36mm |
+| Wheel separation | 195mm |
+| Base mass | ~5kg |
+| Max speed | 0.22 m/s (Nav2 config) |
 
 ---
 
-## 📨 navigator_msgs
+## navigator_msgs
 
-**Purpose**: Custom ROS 2 message definitions for Navigator-specific data
+**Purpose**: Custom ROS 2 message definitions.
 
-### Contents
-
-```
-navigator_msgs/
-├── msg/
-│   ├── WheelState.msg          # Individual wheel data
-│   ├── SystemStatus.msg        # System health
-│   ├── NavigatorStatus.msg     # Robot state
-│   ├── MotorCommand.msg        # Motor commands
-│   └── BatteryStatus.msg       # Battery info
-├── CMakeLists.txt
-└── package.xml
-```
-
-### Message Definitions
-
-#### WheelState.msg
-```
-float32 velocity    # rad/s
-float32 position    # rad
-float32 effort      # torque
-```
-
-#### SystemStatus.msg
-```
-bool is_ok
-string message
-```
-
-#### NavigatorStatus.msg
-```
-string mode          # "IDLE", "MANUAL", "AUTO", "DOCKING"
-bool motors_enabled
-bool estop_pressed
-```
-
-#### MotorCommand.msg
-```
-float32 left_velocity
-float32 right_velocity
-```
-
-#### BatteryStatus.msg
-```
-float32 voltage
-float32 current
-float32 percentage
-bool is_charging
-```
-
-### Example Usage
-
-```python
-from navigator_msgs.msg import NavigatorStatus
-
-# Publish status
-status = NavigatorStatus()
-status.mode = "AUTO"
-status.motors_enabled = True
-status.estop_pressed = False
-pub.publish(status)
-```
+| Message | Fields | Use case |
+|---------|--------|---------|
+| `WheelState` | velocity, position, effort | Wheel feedback |
+| `SystemStatus` | is_ok, message | Health monitoring |
+| `NavigatorStatus` | mode, motors_enabled, estop_pressed | Robot state |
+| `MotorCommand` | left_velocity, right_velocity | Direct motor control |
+| `BatteryStatus` | voltage, current, percentage, is_charging | Battery monitoring |
 
 ---
 
-## 🗺️ navigator_nav
+## navigator_nav
 
-**Purpose**: Navigation and SLAM configuration files
-
-### Contents
+**Purpose**: Nav2 and SLAM configuration for the real robot.
 
 ```
 navigator_nav/
 ├── config/
-│   ├── nav2_params.yaml        # Nav2 parameters
-│   ├── amcl_params.yaml        # AMCL localization
-│   └── slam_params.yaml        # SLAM Toolbox config
+│   ├── nav2_params.yaml    # Nav2 parameters
+│   ├── amcl_params.yaml    # AMCL localization
+│   └── slam_params.yaml    # SLAM Toolbox config
 ├── launch/
-│   ├── navigation.launch.py    # Nav2 navigation
-│   ├── slam.launch.py          # SLAM mapping
-│   └── localization.launch.py  # AMCL localization
-├── maps/                       # Saved maps
-├── CMakeLists.txt
-└── package.xml
-```
-
-### Key Features
-
-- Pre-configured Nav2 parameters
-- SLAM Toolbox integration
-- AMCL localization
-- Costmap configurations
-- Behavior tree setup
-
-### Example Usage
-
-```bash
-# Start SLAM mapping
-ros2 launch navigator_nav slam.launch.py
-
-# Start navigation with map
-ros2 launch navigator_nav navigation.launch.py map:=~/maps/office.yaml
+│   ├── navigation.launch.py
+│   ├── slam.launch.py
+│   └── localization.launch.py
+└── maps/                   # Saved maps
 ```
 
 ---
 
-## 🎮 navigator_sim
+## navigator_sim
 
-**Purpose**: Gazebo Fortress simulation environment
-
-### Contents
+**Purpose**: Gazebo Fortress simulation environment.
 
 ```
 navigator_sim/
 ├── worlds/
-│   ├── empty.sdf               # Empty world
-│   ├── improved.sdf            # Basic world with lighting
-│   └── obstacles.sdf           # World with obstacles
+│   ├── empty.sdf           # Minimal world
+│   ├── improved.sdf        # Better physics and lighting
+│   ├── obstacles.sdf       # Obstacles for navigation testing
+│   └── house.sdf           # Indoor house environment
 ├── launch/
-│   ├── gazebo.launch.py                # Basic simulation
-│   ├── gazebo_slam.launch.py           # Simulation + SLAM
-│   ├── gazebo_slam_nav2.launch.py      # Full navigation stack
-│   ├── gazebo_navigation.launch.py     # Navigation with map
-│   ├── slam.launch.py                  # SLAM only
-│   ├── nav2.launch.py                  # Nav2 only
-│   ├── navigation.launch.py            # Navigation with AMCL
-│   └── rviz_nav2.launch.py             # RViz with Nav2 config
-├── config/
-│   ├── nav2_params.yaml        # Nav2 configuration
-│   ├── amcl_params.yaml        # AMCL configuration
-│   ├── nav2_default_view.rviz  # RViz layout
+│   ├── gazebo.launch.py               # Basic simulation
+│   ├── gazebo_slam.launch.py          # Simulation + SLAM
+│   ├── gazebo_slam_nav2.launch.py     # Full navigation stack
+│   └── gazebo_navigation.launch.py    # Navigation with saved map
+└── config/
+    ├── nav2_params.yaml
+|   ├── amcl_params.yaml 
+    └── nav2_default_view.rviz
 │   └── joint_state_config.yaml # Joint state publisher
 ├── save_map.sh                 # Map saving script
 ├── CMakeLists.txt
 └── package.xml
 ```
 
-### Key Features
-
-- **Multiple Worlds**: Empty, improved, obstacles
-- **Complete Launch Files**: From simple to full navigation
-- **Gazebo Plugins**:
-  - Differential drive
-  - Lidar sensor
-  - Camera sensor
-  - Joint state publisher
-  - Odometry
-- **ROS-Gazebo Bridges**: All sensor data bridged to ROS 2
-
-### World Descriptions
-
-- **empty.sdf**: Minimal world with ground and sun
-- **improved.sdf**: Better physics and lighting
-- **obstacles.sdf**: Various obstacles for testing navigation
-
-### Example Usage
+### Simulation launch commands
 
 ```bash
 # Basic simulation
@@ -334,10 +203,23 @@ ros2 launch navigator_sim gazebo_navigation.launch.py map:=~/maps/my_map.yaml
 cd ~/navigator_ws/src/navigator/navigator_sim
 ./save_map.sh my_office_map
 ```
+```
+navigator_bringup
+    ├── navigator_description
+    ├── navigator_control
+    ├── navigator_nav
+    ├── camera_ros          ← libcamera bridge for OV5647
+    ├── rplidar_ros
+    └── robot_state_publisher
 
+navigator_sim
+    ├── navigator_description
+    ├── ros_gz_sim
+    └── ros_gz_bridge
+```
 ---
 
-## 🔗 Package Dependencies
+## Package Dependencies
 
 ### navigator_bringup
 - navigator_description
@@ -369,17 +251,17 @@ cd ~/navigator_ws/src/navigator/navigator_sim
 
 ---
 
-## 🎯 Quick Reference
+## Quick Reference
 
-| Task | Package | Command |
-|------|---------|---------|
-| View robot model | navigator_description | `ros2 launch navigator_description view_robot.launch.py` |
-| Start controllers | navigator_control | `ros2 launch navigator_control ros2_control.launch.py` |
-| Run simulation | navigator_sim | `ros2 launch navigator_sim gazebo.launch.py` |
-| Create map | navigator_sim | `ros2 launch navigator_sim gazebo_slam.launch.py` |
-| Navigate autonomously | navigator_sim | `ros2 launch navigator_sim gazebo_navigation.launch.py` |
-| Full system | navigator_bringup | `ros2 launch navigator_bringup bringup_rviz.launch.py` |
+| Task | Command |
+|------|---------|
+| Start real robot | `ros2 launch navigator_bringup hardware.launch.py` |
+| SLAM mapping | `ros2 launch navigator_bringup navigation.launch.py slam:=true` |
+| Autonomous navigation | `ros2 launch navigator_bringup navigation.launch.py map:=~/maps/map.yaml` |
+| Run simulation | `ros2 launch navigator_sim gazebo.launch.py` |
+| View robot model | `ros2 launch navigator_control view_robot.launch.py` |
+| Calibrate camera | `ros2 launch navigator_bringup calibrate_camera.launch.py` |
 
 ---
 
-[← Back to Main Documentation](../README.md) | [Next: Robot Description →](robot-description.md)
+[← Back to Main Documentation](../README.md)
