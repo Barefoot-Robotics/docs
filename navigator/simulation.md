@@ -115,7 +115,7 @@ ros2 launch navigator_sim gazebo_navigation.launch.py map:=~/maps/my_map.yaml
 
 The `navigator_sim/worlds/` directory contains:
 
-#### 1. navigator_world.sdf ⭐ Recommended
+#### 1. navigator_world.sdf (Recommended)
 The Navigator benchmark environment — an 8 m × 8 m walled arena purpose-built for SLAM and Nav2 testing, inspired by TurtleBot3 World.
 
 Launch it directly:

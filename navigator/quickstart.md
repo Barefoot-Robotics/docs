@@ -11,6 +11,8 @@ Get your Navigator robot running in simulation in just a few minutes!
 
 ### Option 1: Simple Gazebo Simulation
 
+![gazebo](<../images/gazebo_launch.png>)
+
 Launch the robot in Gazebo:
 
 ```bash
@@ -24,6 +26,8 @@ This will:
 - Publish robot transforms
 
 ### Option 2: Simulation with Visualization
+
+![rviz](<../images/rviz.png>)
 
 Launch with RViz for visualization:
 
@@ -67,6 +71,8 @@ ros2 launch teleop_twist_joy teleop-launch.py
 
 ### Start SLAM Mapping
 
+![slam](<../images/slam.png>)
+
 ```bash
 # Terminal 1: Launch Gazebo simulation
 ros2 launch navigator_sim gazebo.launch.py
@@ -100,24 +106,6 @@ ros2 run nav2_map_server map_saver_cli -f ~/navigator_maps/my_first_map
 You'll get two files:
 - `my_first_map.yaml` - Map metadata
 - `my_first_map.pgm` - Map image
-
-##  Navigate Autonomously
-
-### Using a Saved Map
-
-```bash
-# Launch navigation with your map
-ros2 launch navigator_sim gazebo_navigation.launch.py map:=~/navigator_maps/my_first_map.yaml
-```
-
-### Set Navigation Goals
-
-In RViz:
-1. Click "2D Pose Estimate" button
-2. Click on the map where the robot is and drag to set orientation
-3. Click "Nav2 Goal" button
-4. Click on the map where you want the robot to go
-5. Watch the robot navigate autonomously!
 
 ##  Monitor Robot Status
 
@@ -153,9 +141,6 @@ ros2 launch navigator_sim gazebo_slam.launch.py
 
 # Gazebo + SLAM + Nav2
 ros2 launch navigator_sim gazebo_slam_nav2.launch.py
-
-# Gazebo + Navigation (with map)
-ros2 launch navigator_sim gazebo_navigation.launch.py map:=~/path/to/map.yaml
 
 # RViz with Nav2 config
 ros2 launch navigator_sim rviz_nav2.launch.py
