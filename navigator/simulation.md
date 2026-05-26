@@ -2,13 +2,16 @@
 
 Complete guide to simulating the Navigator robot in Gazebo Fortress.
 
+
+![Screenshot](/images/gazebo.png)
+
 ## Overview
 
 The Navigator simulation provides:
 - Realistic physics simulation
 - Sensor simulation (Lidar, Camera)
 - Differential drive control
-- Multiple test environments
+- Multiple test environments including the Navigator World benchmark arena
 - Full integration with Nav2
 
 ## Prerequisites
@@ -28,7 +31,13 @@ ign gazebo --version
 
 ### 1. Basic Simulation
 
-Launch minimal simulation:
+Launch in the Navigator World (recommended starting point):
+
+```bash
+ros2 launch navigator_sim navigator_world.launch.py
+```
+
+Or launch in a custom world:
 
 ```bash
 ros2 launch navigator_sim gazebo.launch.py
@@ -50,6 +59,13 @@ Create maps while exploring:
 ros2 launch navigator_sim gazebo_slam.launch.py
 ```
 
+To use the Navigator World with SLAM:
+
+```bash
+ros2 launch navigator_sim gazebo_slam.launch.py \
+  world:=$(ros2 pkg prefix navigator_sim)/share/navigator_sim/worlds/navigator_world.sdf
+```
+
 **What's included:**
 - Everything from basic simulation
 - SLAM Toolbox for mapping
@@ -61,6 +77,13 @@ Complete autonomous navigation:
 
 ```bash
 ros2 launch navigator_sim gazebo_slam_nav2.launch.py
+```
+
+To use the Navigator World with the full stack:
+
+```bash
+ros2 launch navigator_sim gazebo_slam_nav2.launch.py \
+  world:=$(ros2 pkg prefix navigator_sim)/share/navigator_sim/worlds/navigator_world.sdf
 ```
 
 **What's included:**
@@ -84,42 +107,118 @@ ros2 launch navigator_sim gazebo_navigation.launch.py map:=~/maps/my_map.yaml
 - Nav2 navigation
 - No SLAM (map is fixed)
 
+---
+
 ## Simulation Worlds
 
 ### Available Worlds
 
 The `navigator_sim/worlds/` directory contains:
 
-#### 1. empty.sdf
-- Minimal environment
-- Ground plane and sun only
-- Good for basic testing
+#### 1. navigator_world.sdf ⭐ Recommended
+The Navigator benchmark environment — an 8 m × 8 m walled arena purpose-built for SLAM and Nav2 testing, inspired by TurtleBot3 World.
 
-#### 2. improved.sdf
-- Better physics configuration
-- Improved lighting
-- Enhanced rendering
-- Recommended for testing
+**What's inside:**
+- **Outer boundary** — four solid walls enclosing the full arena
+- **Interior wall segments** — four partial walls + a centre vertical stub creating corridors, dead-ends, and chokepoints
+- **5 cylinder columns** — round blue pillars for testing costmap inflation
+- **7 box obstacles** — various sizes, some rotated, spread across all quadrants
+- **2 L-shaped corner alcoves** — in the NE and SW corners for SLAM loop-closure challenge
+- **Spawn marker** — glowing green disc at (0, 0) showing the robot's start position
 
-#### 3. obstacles.sdf (Default)
-- Multiple obstacles
-- Walls and objects
-- Various shapes (boxes, cylinders)
-- Perfect for navigation testing
+Launch it directly:
+
+```bash
+ros2 launch navigator_sim navigator_world.launch.py
+```
+
+#### 2. empty.sdf
+Minimal environment with ground plane and sun only. Good for basic testing and verifying the robot spawns correctly.
+
+#### 3. improved.sdf
+Better physics configuration, improved lighting, enhanced rendering. Recommended when you want a clean empty space with good visuals.
+
+#### 4. obstacles.sdf
+Multiple scattered obstacles, walls, and objects of various shapes. Good for quick navigation testing without the structured benchmark layout.
+
+#### 5. house.sdf
+Full indoor house environment with rooms, corridors, furniture, and doorways. Most realistic environment — use this once SLAM and Nav2 are tuned.
 
 ### Selecting a World
 
-Edit `gazebo.launch.py`:
+#### Using the dedicated launch file (navigator_world only):
 
-```python
-# Change this line
-world_file = os.path.join(nav_sim_share, "worlds", "obstacles.sdf")
-
-# To use different world
-world_file = os.path.join(nav_sim_share, "worlds", "improved.sdf")
+```bash
+ros2 launch navigator_sim navigator_world.launch.py
 ```
 
-Or specify via command line argument (if implemented).
+#### Passing a world to any launch file via argument:
+
+```bash
+# SLAM with the house world
+ros2 launch navigator_sim gazebo_slam.launch.py \
+  world:=$(ros2 pkg prefix navigator_sim)/share/navigator_sim/worlds/house.sdf
+
+# Basic simulation with the empty world
+ros2 launch navigator_sim gazebo.launch.py \
+  world:=$(ros2 pkg prefix navigator_sim)/share/navigator_sim/worlds/empty.sdf
+```
+
+#### Changing the default inside a launch file:
+
+Edit `gazebo.launch.py` and update the `default_value`:
+
+```python
+declare_world_arg = DeclareLaunchArgument(
+    'world',
+    default_value=os.path.join(nav_sim_share, "worlds", "navigator_world.sdf"),
+    ...
+)
+```
+
+---
+
+## Gazebo Camera — Fixing the Fisheye Look
+
+The default Gazebo orbit camera uses a very wide field of view which causes a fisheye/barrel distortion effect, especially when zoomed in close to the robot. There are two ways to fix it.
+
+### Quick fix (GUI)
+
+In the Gazebo window:
+
+```
+View → Camera → Field of View → set to 60
+```
+
+60° is the standard comfortable FOV. Values above 90° cause noticeable distortion.
+
+### Permanent fix (world file)
+
+Add this block inside the `<world>` tag of your SDF file, just before `</world>`:
+
+```xml
+<gui fullscreen="0">
+  <camera name="user_camera">
+    <pose>-6 -6 5 0 0.5 0.785</pose>
+    <view_controller>orbit</view_controller>
+    <projection_type>perspective</projection_type>
+  </camera>
+</gui>
+```
+
+The `<pose>` values are `x y z roll pitch yaw`. This example places the camera at a 45° angle looking down at the arena from the SW corner — the standard TurtleBot3-style view.
+
+Adjust to taste:
+
+| Goal | Change |
+|------|--------|
+| Move closer | Reduce x/y (e.g. `-4 -4 4`) |
+| More top-down | Increase pitch (e.g. `0.8`) |
+| Different angle | Change yaw (`0.785` = 45°, `1.57` = 90°) |
+
+The `navigator_world.sdf` already includes this block with a good default view.
+
+---
 
 ## Sensor Configuration
 
@@ -134,7 +233,6 @@ Or specify via command line argument (if implemented).
 
 **Topic:** `/scan`
 
-**Visualization in RViz:**
 ```bash
 ros2 topic echo /scan
 ros2 topic hz /scan
@@ -150,10 +248,9 @@ ros2 topic hz /scan
 - Range: 0.02m - 300m
 
 **Topics:**
-- `/camera/image_raw` - Image data
-- `/camera/camera_info` - Camera parameters
+- `/camera/image_raw` — Image data
+- `/camera/camera_info` — Camera parameters
 
-**View camera feed:**
 ```bash
 ros2 run rqt_image_view rqt_image_view
 ```
@@ -169,11 +266,11 @@ ros2 run rqt_image_view rqt_image_view
 - Publishes: Position, velocity, orientation
 - Includes: Covariance matrices
 
+---
+
 ## Robot Control in Simulation
 
 ### Command Velocity
-
-The robot accepts `geometry_msgs/Twist` messages on `/cmd_vel`:
 
 ```bash
 # Publish single command
@@ -190,15 +287,15 @@ Defined in `gazebo.xacro`:
 
 ### Teleop Control
 
-#### Keyboard:
 ```bash
+# Keyboard
 ros2 run teleop_twist_keyboard teleop_twist_keyboard
-```
 
-#### Gamepad:
-```bash
+# Gamepad
 ros2 launch teleop_twist_joy teleop-launch.py
 ```
+
+---
 
 ## ROS-Gazebo Bridges
 
@@ -213,6 +310,8 @@ Active bridges in simulation:
 | `/odom` | Odometry | Gazebo → ROS |
 | `/tf` | TFMessage | Gazebo → ROS |
 | `/clock` | Clock | Gazebo → ROS |
+
+---
 
 ## Visualization with RViz
 
@@ -244,47 +343,43 @@ Pre-configured displays include:
 4. Click on map where you want robot to go
 5. Drag to set goal orientation
 
+---
+
 ## Performance Tuning
 
 ### If Simulation is Slow
 
-1. **Reduce physics update rate:**
+1. **Reduce physics update rate** — edit world file:
 
-Edit world file:
 ```xml
-<max_step_size>0.001</max_step_size>
-<!-- Change to -->
 <max_step_size>0.01</max_step_size>
 ```
 
-2. **Disable camera:**
+2. **Disable camera** — comment out camera bridge in `gazebo.launch.py`
 
-Comment out camera bridge in `gazebo.launch.py`
+3. **Reduce lidar samples** — edit `gazebo.xacro`:
 
-3. **Reduce lidar samples:**
-
-Edit `gazebo.xacro`:
 ```xml
-<samples>360</samples>
-<!-- Change to -->
 <samples>180</samples>
 ```
 
 ### If Robot Drifts or Slides
 
-1. **Increase wheel friction:**
+1. **Increase wheel friction** in `gazebo.xacro`:
 
-Edit `gazebo.xacro`:
 ```xml
 <mu1>100.0</mu1>
 <mu2>100.0</mu2>
 ```
 
 2. **Adjust contact parameters:**
+
 ```xml
 <kp>10000000.0</kp>
 <kd>1000.0</kd>
 ```
+
+---
 
 ## Debugging
 
@@ -294,19 +389,12 @@ Edit `gazebo.xacro`:
 ros2 node list
 ```
 
-Expected nodes:
-- `/gazebo`
-- `/robot_state_publisher`
-- `/joint_state_publisher`
-- Multiple `/parameter_bridge` nodes
+Expected nodes: `/gazebo`, `/robot_state_publisher`, `/joint_state_publisher`, multiple `/parameter_bridge` nodes.
 
 ### Verify Bridges
 
 ```bash
-# Check if topics exist
 ros2 topic list
-
-# Check bridge nodes
 ros2 node list | grep bridge
 ```
 
@@ -317,6 +405,7 @@ ros2 run rqt_tf_tree rqt_tf_tree
 ```
 
 Expected transforms:
+
 ```
 odom → base_link → {left_wheel_link, right_wheel_link, lidar_link, camera_link}
 ```
@@ -324,16 +413,27 @@ odom → base_link → {left_wheel_link, right_wheel_link, lidar_link, camera_li
 ### Gazebo Verbose Output
 
 ```bash
-ign gazebo -v 4 -r obstacles.sdf
+ign gazebo -v 4 -r navigator_world.sdf
 ```
+
+---
 
 ## Common Issues
 
+### Fisheye / Distorted View in Gazebo
+
+**Cause**: Default Gazebo camera has a very wide FOV.
+
+**Quick fix**: `View → Camera → Field of View → 60`
+
+**Permanent fix**: Add a `<gui>` camera block to your world SDF — see [Fixing the Fisheye Look](#gazebo-camera--fixing-the-fisheye-look) above.
+
 ### Robot Falls Through Ground
 
-**Cause**: Physics not loaded
+**Cause**: Physics plugin not loaded.
 
 **Solution**: Ensure physics plugin in world file:
+
 ```xml
 <plugin filename="libignition-gazebo-physics-system.so"
         name="ignition::gazebo::systems::Physics">
@@ -342,9 +442,10 @@ ign gazebo -v 4 -r obstacles.sdf
 
 ### No Lidar Data
 
-**Cause**: Sensor system not loaded
+**Cause**: Sensor system not loaded.
 
 **Solution**: Check world file includes:
+
 ```xml
 <plugin filename="libignition-gazebo-sensors-system.so"
         name="ignition::gazebo::systems::Sensors">
@@ -354,7 +455,7 @@ ign gazebo -v 4 -r obstacles.sdf
 
 ### Robot Doesn't Move
 
-**Cause**: No cmd_vel or bridge issue
+**Cause**: No cmd_vel or bridge issue.
 
 **Solutions**:
 1. Check bridge: `ros2 topic info /cmd_vel`
@@ -363,13 +464,13 @@ ign gazebo -v 4 -r obstacles.sdf
 
 ### Camera Not Working
 
-**Cause**: Render engine not specified
+**Cause**: Render engine not specified.
 
-**Solution**: Verify sensor plugin has render engine specified (shown above)
+**Solution**: Verify sensor plugin has `<render_engine>ogre2</render_engine>`.
+
+---
 
 ## Recording and Playback
-
-### Record Simulation Data
 
 ```bash
 # Record all topics
@@ -377,13 +478,12 @@ ros2 bag record -a
 
 # Record specific topics
 ros2 bag record /scan /odom /camera/image_raw
-```
 
-### Playback Recorded Data
-
-```bash
+# Playback
 ros2 bag play my_recording.db3
 ```
+
+---
 
 ## Advanced: Custom Worlds
 
@@ -393,44 +493,51 @@ Create your own world file:
 <?xml version="1.0" ?>
 <sdf version="1.9">
   <world name="my_world">
-    <!-- Physics -->
     <physics name="1ms" type="ignored">
       <max_step_size>0.001</max_step_size>
       <real_time_factor>1.0</real_time_factor>
     </physics>
-    
-    <!-- Plugins -->
+
     <plugin filename="libignition-gazebo-physics-system.so"
             name="ignition::gazebo::systems::Physics"/>
     <plugin filename="libignition-gazebo-sensors-system.so"
             name="ignition::gazebo::systems::Sensors">
       <render_engine>ogre2</render_engine>
     </plugin>
-    
-    <!-- Ground -->
-    <include>
-      <uri>model://ground_plane</uri>
-    </include>
-    
-    <!-- Light -->
-    <include>
-      <uri>model://sun</uri>
-    </include>
-    
+
+    <!-- Optional: set a comfortable starting camera view -->
+    <gui fullscreen="0">
+      <camera name="user_camera">
+        <pose>-6 -6 5 0 0.5 0.785</pose>
+        <view_controller>orbit</view_controller>
+        <projection_type>perspective</projection_type>
+      </camera>
+    </gui>
+
+    <include><uri>model://ground_plane</uri></include>
+    <include><uri>model://sun</uri></include>
+
     <!-- Add your models here -->
   </world>
 </sdf>
 ```
 
-Save to `navigator_sim/worlds/my_world.sdf`
+Save to `navigator_sim/worlds/my_world.sdf`, then launch:
+
+```bash
+ros2 launch navigator_sim gazebo.launch.py \
+  world:=$(ros2 pkg prefix navigator_sim)/share/navigator_sim/worlds/my_world.sdf
+```
+
+---
 
 ## Tips for Effective Simulation
 
-1. **Start Simple**: Test with empty world first
-2. **Use Verbose Mode**: Launch with `-v 4` for debugging
-3. **Monitor Performance**: Check `ign stats` while running
-4. **Save Maps**: Don't lose your mapping work
-5. **Test Incrementally**: Add complexity gradually
+1. **Start with Navigator World** — it's designed for SLAM and Nav2 and has a comfortable camera angle out of the box
+2. **Use verbose mode** — launch with `-v 4` for debugging
+3. **Fix the camera first** — set FOV to 60° if anything looks distorted
+4. **Save maps** — don't lose your SLAM work
+5. **Test incrementally** — verify basic motion before adding SLAM, then Nav2
 
 ---
 
