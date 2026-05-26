@@ -1,6 +1,6 @@
 # Navigator Robot - Overview
 
-![Screenshot](/images/overview.png)
+![Screenshot](../images/overview.png)
 
 ## Introduction
 

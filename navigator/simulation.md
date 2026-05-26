@@ -118,14 +118,6 @@ The `navigator_sim/worlds/` directory contains:
 #### 1. navigator_world.sdf ⭐ Recommended
 The Navigator benchmark environment — an 8 m × 8 m walled arena purpose-built for SLAM and Nav2 testing, inspired by TurtleBot3 World.
 
-**What's inside:**
-- **Outer boundary** — four solid walls enclosing the full arena
-- **Interior wall segments** — four partial walls + a centre vertical stub creating corridors, dead-ends, and chokepoints
-- **5 cylinder columns** — round blue pillars for testing costmap inflation
-- **7 box obstacles** — various sizes, some rotated, spread across all quadrants
-- **2 L-shaped corner alcoves** — in the NE and SW corners for SLAM loop-closure challenge
-- **Spawn marker** — glowing green disc at (0, 0) showing the robot's start position
-
 Launch it directly:
 
 ```bash
