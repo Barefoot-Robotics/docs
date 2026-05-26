@@ -1,5 +1,7 @@
 # Navigator Robot - Overview
 
+![Screenshot](/images/overview.png)
+
 ## Introduction
 
 The Navigator is a cutting-edge autonomous mobile robot platform designed for research and development in robotics, particularly focused on SLAM (Simultaneous Localization and Mapping) and autonomous navigation. Built on ROS 2 Humble, it provides a robust, extensible foundation for developing and testing navigation algorithms in both simulated and real-world environments.
@@ -49,6 +51,8 @@ The Navigator is a cutting-edge autonomous mobile robot platform designed for re
 - Facility inspection robots
 
 ## Technical Specifications
+
+![drawing](</images/drawing.png>)
 
 ### Physical Dimensions
 - **Length**: 180 mm

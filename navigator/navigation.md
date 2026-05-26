@@ -15,6 +15,7 @@ Autonomous navigation allows the robot to:
 ✅ Completed [SLAM Mapping](slam.md) and have a saved map  
 ✅ Understanding of basic ROS 2 concepts
 
+![auto_nav](</images/auto_navigation.png>)
 ## Quick Start - Navigation with Saved Map
 
 ### 1. Launch Navigation Stack
