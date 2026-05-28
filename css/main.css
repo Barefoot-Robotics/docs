@@ -5,7 +5,7 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'Roboto', 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif;
     background-color: #000000;
     color: #ffffff;
     line-height: 1.6;
@@ -186,6 +186,7 @@ nav a:hover {
 /* Content */
 .content {
     max-width: 900px;
+    min-width: 0; /* Prevents grid items from overflowing */
 }
 
 .breadcrumb {
@@ -206,13 +207,8 @@ nav a:hover {
 /* Loading state */
 .loading {
     text-align: center;
-    padding: 4rem 0;
+    padding: 0;
     color: #ffffff;
-}
-
-.loading::after {
-    content: '...';
-    animation: dots 1.5s steps(3, end) infinite;
 }
 
 @keyframes dots {
@@ -303,8 +299,8 @@ nav a:hover {
     background: #0a0a0a;
     padding: 0.2rem 0.4rem;
     border-radius: 4px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9em;
+    font-family: 'Ubuntu Mono', 'Fira Code', 'JetBrains Mono', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    font-size: 0.95em; /* Slightly increased for readability */
     color: #e06c75;
 }
 
@@ -314,6 +310,8 @@ nav a:hover {
     border-radius: 8px;
     padding: 1.5rem;
     overflow-x: auto;
+    max-width: 100%;
+    display: block;
     margin: 1.5rem 0;
     position: relative;
 }
@@ -321,6 +319,7 @@ nav a:hover {
 .content pre code {
     background: none;
     padding: 0;
+    font-size: 0.9em; /* Slightly smaller for code blocks to fit more */
     color: #abb2bf;
 }
 
@@ -652,6 +651,8 @@ body.sidebar-open {
     /* Code blocks scroll */
     .content pre {
         overflow-x: auto;
+        max-width: 100%;
+        width: 100%;
     }
 
     /* Footer adjustments */
