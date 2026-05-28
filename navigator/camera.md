@@ -1,5 +1,7 @@
 # Camera Integration — UC-261 (OV5647)
 
+<img src="/images/camera.jpg" width="400" alt="camera">
+
 The Navigator-I uses a **UC-261 USB camera** with an **OV5647 sensor** connected
 via the Raspberry Pi CSI interface, accessed through **libcamera** and the
 **camera_ros** ROS 2 bridge.
