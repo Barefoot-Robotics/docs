@@ -94,7 +94,11 @@ ssh pi@navigator.local
 ```
 *The default username is typically `ubuntu` for ROS 2 Humble installations.*
 
-### 3. Configure the Environment
+### 3. Install Navigator Package
+
+Please follow the [installation](installation.md) steps to install navigator package.
+
+### 4. Configure the Environment
 Add the following to your `~/.bashrc` on the robot to ensure ROS 2 is ready every time you log in:
 
 ```bash
@@ -103,9 +107,6 @@ echo "source ~/navigator_ws/install/setup.bash" >> ~/.bashrc
 source ~/.bashrc
 ```
 
-## Installing Navigator Package
-
-Please follow the [installation](installation.md) steps to install navigator package.
 
 ## Running Hardware Commands
 
