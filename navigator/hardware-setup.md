@@ -2,6 +2,8 @@
 
 This guide provides the instructions necessary to assemble the Navigator-I robot and establish a remote connection to its onboard computer.
 
+![Screenshot](../images/components.png)
+
 ## Component List
 
 | Category | Component | Specification |
