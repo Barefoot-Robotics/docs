@@ -16,9 +16,27 @@ Autonomous navigation allows the robot to:
 ✅ Understanding of basic ROS 2 concepts
 
 ![auto_nav](</images/auto_navigation.png>)
-## Quick Start - Navigation with Saved Map
+## Quick Start - Navigation with SLAM or Saved Map
 
 ### 1. Launch Navigation Stack
+
+#### Option A: Launch Navigation with SLAM first
+
+```bash
+# Launch Gazebo + SLAM + Nav2
+ros2 launch navigator_sim gazebo_slam_nav2.launch.py
+```
+
+**What launches:**
+- Gazebo simulation
+- SLAM Toolbox (mapping/localization)
+- AMCL localization
+- Nav2 navigation stack
+- All costmaps and planners
+
+> Use this when you want to start navigation and mapping together, or when you do not yet have a saved map.
+
+#### Option B: Launch Navigation with a Saved Map
 
 ```bash
 # Launch Gazebo + Navigation with your map
@@ -30,6 +48,8 @@ ros2 launch navigator_sim gazebo_navigation.launch.py map:=~/navigator_maps/my_m
 - AMCL localization
 - Nav2 navigation stack
 - All costmaps and planners
+
+> Use this when you already have a saved map and want to jump directly into navigation.
 
 ### 2. Open RViz
 
