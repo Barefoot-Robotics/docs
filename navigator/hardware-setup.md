@@ -19,6 +19,7 @@ This guide provides the instructions necessary to assemble the Navigator-I robot
 | **Sensors** | IMU | 6-axis Inertial Measurement Unit for odometry fusion |
 | **Storage** | MicroSD Card | 32GB+ Class 10 with Ubuntu 22.04 LTS |
 | **Power** | Battery, Charger | 12V,4h battery backup|
+| **Control** | Joystick | Manual Control |
 | **Accessories** | Camera Flange, Wheel Flange x2 | Flanges to mount camera and wheels |
 | **Consumables** | Screws, Nuts, Cables| - |
 
@@ -119,6 +120,19 @@ This command starts the Lidar, Camera, and Motor controllers simultaneously:
 
 ```bash
 ros2 launch navigator_bringup hardware.launch.py
+```
+
+### Launch Full Navigation Stack
+This command starts the launch file for Autonomous Navigation:
+
+```bash
+# With Slam
+ros2 launch navigator_bringup navigation.launch.py slam:=True
+```
+or
+```bash
+# With Map
+ros2 launch navigator_bringup navigation.launch.py map:=home/user/path/to/yourmap.yaml
 ```
 
 ### Verify Sensor Data
