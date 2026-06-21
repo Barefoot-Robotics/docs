@@ -126,7 +126,7 @@ ros2 launch navigator_bringup hardware.launch.py
 This command starts the launch file for Autonomous Navigation:
 
 ```bash
-# With Slam
+# With SLAM
 ros2 launch navigator_bringup navigation.launch.py slam:=True
 ```
 or
